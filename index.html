@@ -161,11 +161,11 @@ const points = [
       map.addLayer(layers[cat]);
     }
   }
-  map.on('click', function(e) {
-  const y = Math.floor(e.latlng.lat);
-  const x = Math.floor(e.latlng.lng);
-  alert(`Coordonnées pixels : Y = ${y}, X = ${x}`);
-});
+// map.on('click', function(e) {
+// const y = Math.floor(e.latlng.lat);
+// const x = Math.floor(e.latlng.lng);
+// alert(`Coordonnées pixels : Y = ${y}, X = ${x}`);
+// });
 
 // Icônes personnalisées
 const houseIcon = L.icon({
@@ -308,4 +308,5 @@ document.getElementById("reportModal").addEventListener("click", function (e) {
 
 </body>
 </html>
+
 
