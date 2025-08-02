@@ -106,7 +106,7 @@ iframe.modal-content {
   });
 
   const bounds = [[0, 0], [imageHeight, imageWidth]];
-  const image = L.imageOverlay('https://media.discordapp.net/attachments/854068118031958076/1401198957073399848/map.png?ex=688f67b8&is=688e1638&hm=aa24a241d6bb044a98ca81d7c4183aaea42d21e778466c2bda92c204597c34fc&=&format=webp&quality=lossless&width=1233&height=960', bounds).addTo(map);
+  const image = L.imageOverlay('https://cdn.discordapp.com/attachments/854068118031958076/1401198957073399848/map.png?ex=688f67b8&is=688e1638&hm=aa24a241d6bb044a98ca81d7c4183aaea42d21e778466c2bda92c204597c34fc&', bounds).addTo(map);
   map.fitBounds(bounds);
 
   // Regroupe les points par catégorie
@@ -308,5 +308,6 @@ document.getElementById("reportModal").addEventListener("click", function (e) {
 
 </body>
 </html>
+
 
 
