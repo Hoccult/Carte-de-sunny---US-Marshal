@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Carte Interactive avec Filtres</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <style>
+    html, body, #map {
+  height: 1500px;  /* Hauteur fixe */
+  width: 100%;
+  background-color: #D6B890; /* juste pour tester la visibilité */
+}
+
+#menu {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  left: auto;    /* enlever left */
+  z-index: 1000;
+}
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.9);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  margin: auto;
+  display: block;
+  max-width: 90%;
+  max-height: 90%;
+}
+
+.modal-close {
+  position: absolute;
+  top: 20px;
+  right: 35px;
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 2001;
+}
+
+iframe.modal-content {
+  background-color: white;
+  border-radius: 8px;
+  padding: 10px;
+}
+  </style>
+  
+</head>
+
+<!-- Ce bloc est déplacé ici, EN DEHORS du script -->
+<div id="reportModal" class="modal">
+  <span class="modal-close" id="closeReportModal">&times;</span>
+  <embed id="reportFrame" class="modal-content" type="application/pdf" style="height: 90%; width: 90%;" />
+</div>
+
+
+</body>
+</html>
+
+
+<body>
+
+<div id="menu">
+  <strong>Filtres :</strong><br>
+<label><input type="checkbox" checked onchange="toggleCategory('Maisons')">Maisons</label><br>
+<label><input type="checkbox" checked onchange="toggleCategory('Camps')">Camps</label><br>
+<label><input type="checkbox" checked onchange="toggleCategory('Passeurs')">Passeurs</label><br>
+<label><input type="checkbox" checked onchange="toggleCategory('Tailleurs')">Tailleurs</label><br>
+<label><input type="checkbox" checked onchange="toggleCategory('Lieux de RDV Marshal')">Lieux de RDV Marshal</label><br>
+<label><input type="checkbox" checked onchange="toggleCategory('Diamant taillee')">Diamant taillee</label><br>
+<label><input type="checkbox" checked onchange="toggleCategory('Points chaud')">Points chauds</label><br>
+<label><input type="checkbox" checked onchange="toggleCategory('Possible QG')">Possible QG</label><br>
+<label><input type="checkbox" checked onchange="toggleCategory('Puits')">Puits</label><br>
+<label><input type="checkbox" checked onchange="toggleCategory('Documents')">Documents</label><br>
+<label><input type="checkbox" checked onchange="toggleCategory('Autres')">Autres</label><br>
+<label><input type="checkbox" checked onchange="toggleCategory('Blackstorm')">Blackstorm</label><br>
+</div>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<div id="imgModal" class="modal">
+  <span class="modal-close" id="closeModal">&times;</span>
+  <img class="modal-content" id="modalImg">
+
+<script>
+  // Dimensions de la carte lemoyne
+  const imageWidth = 9000;
+  const imageHeight = 7004;
+
+  const map = L.map('map', {
+    crs: L.CRS.Simple,
+    minZoom: -5,
+  });
+
+  const bounds = [[0, 0], [imageHeight, imageWidth]];
+  const image = L.imageOverlay('map.png', bounds).addTo(map);
+  map.fitBounds(bounds);
+
+  // Regroupe les points par catégorie
+const layers = {
+  Maisons: L.layerGroup().addTo(map),
+  Camps: L.layerGroup().addTo(map),
+  Passeurs: L.layerGroup().addTo(map),
+  Tailleurs: L.layerGroup().addTo(map),
+  'Lieux de RDV Marshal': L.layerGroup().addTo(map),
+  'Diamant taillee': L.layerGroup().addTo(map),
+  'Points chaud': L.layerGroup().addTo(map),
+  'Possible QG': L.layerGroup().addTo(map),
+  Puits: L.layerGroup().addTo(map),
+  Documents: L.layerGroup().addTo(map),
+  Autres: L.layerGroup().addTo(map),
+  Blackstorm: L.layerGroup().addTo(map),
+};
+
+  // Liste des points d’intérêt
+const points = [
+  { name: "Maison #001", coords: [4613, 4847], description: "Maison de Tommy Tyks et de Riley Winchester", category: "Maisons", image: "IMAGE/preuve-tommy.png" },
+  { name: "Maison #002", coords: [4857, 4823], description: "Maison de Maggie Garrison", category: "Maisons" },
+  { name: "Maison #003", coords: [4415, 6400], description: "Maison de Circee Miller", category: "Maisons" },
+  { name: "Maison #004", coords: [4862, 7086], description: "Maison de Micah Colt", category: "Maisons" },
+  { name: "Maison #005", coords: [4606, 4298], description: "Maison de Billie Pirate O'connel", category: "Maisons" },
+  { name: "Maison #006", coords: [3719, 4234], description: "Maison de Ray buffalo (Sheriff de WE)", category: "Maisons" },
+  { name: "Puit de Roanoke", coords: [5803, 7639], description: "À côté d'une maison frappée par un éclat de météorite se trouve un vieux puits. Une échelle permet d’y descendre, menant à une vaste cave souterraine ou à un ancien bunker dissimulé sous terre.", category: "Puits", image: "IMAGE/puitmeteor.png" },
+  { name: "Tailleur de Lemoyne ", coords: [3719, 7018], description: "Un tailleur clandestin s’est installé dans une tente près de la rivière. Les visiteurs peuvent s’y changer discrètement.", category: "Tailleurs" },
+  { name: "Tailleur de Big Valley ", coords: [4305, 3499], description: "Un tailleur clandestin s’est installé dans un petit camp. Les visiteurs peuvent s’y changer discrètement.", category: "Tailleurs" },
+  { name: "Tailleur de Tall Trees ", coords: [2693, 4059], description: "Un tailleur clandestin s’est installé dans un camp. Les visiteurs peuvent s’y changer discrètement. Attention aux grizzlies", category: "Tailleurs" },
+  { name: "Tailleur de Donner Falls ", coords: [5658, 6276], description: "Un tailleur clandestin s’est installé devant une vieille maison. Les visiteurs peuvent s’y changer discrètement. Attention aux grizzlies", category: "Tailleurs" },
+  { name: "Distillerie", coords: [4771, 4820], description: "La distillerie est le théâtre de tueries de masse. Il est également possible d’entrer à l’intérieur du bâtiment pour en explorer les lieux.", category: "Diamant taillee" },
+  { name: "Village brulée", coords: [4101, 5405], description: "Le village incendié est le théâtre de tueries de masse.", category: "Diamant taillee" },
+  { name: "Tour Tesla", coords: [6027, 7680], description: "La tour Tesla est le théâtre de tueries de masse.", category: "Diamant taillee" },
+  { name: "Les italiens", coords: [3196, 6221], description: "Des soupçons planent quant à une possible occupation des lieux par Les Italiens", category: "Possible QG" },
+  { name: "Groupe Inconnus", coords: [4187, 5572], description: "Le groupe présent sur les lieux s’est d’abord revendiqué comme appartenant au Front, puis aux Templiers, affirmant utiliser plusieurs noms. Ces deux factions étant bien connues, il est fort probable qu’ils aient menti sur leur véritable identité.", category: "Possible QG" },
+  { name: "Passeur Camp", coords: [3207, 6174], description: "Point d’exfiltration : passeur pour Guarma identifié sur le ponton à proximité immédiate du camp.", category: "Passeurs" },
+  { name: "Passeur Bacchus", coords: [5568, 6040], description: "Point d’exfiltration : passeur pour Guarma identifié sur la plage en dessous du pont de Bacchus.", category: "Passeurs", image: "IMAGE/PasseurBacchus.png" },
+  { name: "Rapport du 25/07/1901", coords: [4278, 7884], description: "Prise d'otage et attaque armee lors du transfert du detenu Joh Vanille", category: "Blackstorm",  link: "DOCUMENTS/Rapport25071901.pdf" },
+  { name: "Rapport du 02/08/1901", coords: [3902, 3561], description: "Bruce Saint-Denis a révélé qu’il possède, avec Joh Vanille, une grande maison située au bord du lac d’Owanjila, à l’ouest de West Elizabeth, où ils vivent en colocation.", category: "Blackstorm",  link: "DOCUMENTS/Rapport02081901.pdf" },
+  { name: "Gang Blackstorm", coords: [2142, 2772], description: "Bruce Saint-Denis et joh vanille regulierement vu sur armadillo", category: "Blackstorm"},
+  { name: "Ancien QG des Blackstorm", coords: [4830, 7708], description: "Ce lieu a très probablement été abandonné, le groupe ayant dû changer d’emplacement depuis.", category: "Blackstorm"},
+  { name: "Observation", coords: [3169, 7676], description: "Observation sur le sherif Luca Brasi et le sherif O’Hara Jack", category: "Documents", link: "DOCUMENTS/ObservationSLemoyne.pdf" },
+
+];
+
+  // Fonction appelée lors d’un clic sur une case
+  function toggleCategory(cat) {
+    if (map.hasLayer(layers[cat])) {
+      map.removeLayer(layers[cat]);
+    } else {
+      map.addLayer(layers[cat]);
+    }
+  }
+  map.on('click', function(e) {
+  const y = Math.floor(e.latlng.lat);
+  const x = Math.floor(e.latlng.lng);
+  alert(`Coordonnées pixels : Y = ${y}, X = ${x}`);
+});
+
+// Icônes personnalisées
+const houseIcon = L.icon({
+  iconUrl: 'ICON/house-icon.png',
+  iconSize: [25, 41],
+  iconAnchor: [16, 37],
+  popupAnchor: [0, -37]
+});
+
+const campIcon = L.icon({
+  iconUrl: 'ICON/camp-icon.png',
+  iconSize: [25, 41],
+  iconAnchor: [16, 37],
+  popupAnchor: [0, -37]
+});
+
+const tailleurIcon = L.icon({
+  iconUrl: 'ICON/tailleur-icon.png',
+  iconSize: [25, 41],
+  iconAnchor: [16, 37],
+  popupAnchor: [0, -37]
+});
+
+const qgIcon = L.icon({
+  iconUrl: 'ICON/qg-icon.png',
+  iconSize: [25, 41],
+  iconAnchor: [16, 37],
+  popupAnchor: [0, -37]
+});
+
+const guarmaIcon = L.icon({
+  iconUrl: 'ICON/guarma-icon.png',
+  iconSize: [25, 41],
+  iconAnchor: [16, 37],
+  popupAnchor: [0, -37]
+});
+
+const documentsIcon = L.icon({
+  iconUrl: 'ICON/rapport-icon.png',
+  iconSize: [41, 39],
+  iconAnchor: [16, 37],
+  popupAnchor: [0, -37]
+});
+
+const BlackstormIcon = L.icon({
+  iconUrl: 'ICON/bs-icon.png',
+  iconSize: [41, 39],
+  iconAnchor: [16, 37],
+  popupAnchor: [0, -37]
+});
+
+const RoseIcon = L.icon({
+  iconUrl: 'ICON/rose-icon.png',
+  iconSize: [25, 41],
+  iconAnchor: [16, 37],
+  popupAnchor: [0, -37]
+});
+
+const puitIcon = L.icon({
+  iconUrl: 'ICON/well-icon.png',
+  iconSize: [30, 53],
+  iconAnchor: [16, 37],
+  popupAnchor: [0, -37]
+});
+
+// Ajout des marqueurs avec icônes adaptées
+points.forEach(p => {
+  let iconToUse = null;
+
+  if (p.category === 'Maisons') {
+    iconToUse = houseIcon;
+  } else if (p.category === 'Camps') {
+    iconToUse = campIcon;
+  } else if (p.category === 'Possible QG') {
+    iconToUse = qgIcon;
+  }else if (p.category === 'Passeurs') {
+    iconToUse = guarmaIcon;
+  }else if (p.category === 'Tailleurs') {
+    iconToUse = tailleurIcon;
+  }else if (p.category === 'Documents') {
+    iconToUse = documentsIcon;
+  }else if (p.category === 'Blackstorm') {
+    iconToUse = BlackstormIcon;
+  }else if (p.category === 'Diamant taillee') {
+    iconToUse = RoseIcon;
+  }else if (p.category === 'Puits') {
+    iconToUse = puitIcon;
+    }
+  // Sinon, pas d'icône personnalisée (marqueur par défaut)
+
+const popupContent = `
+  <b>${p.name}</b><br>
+  ${p.description}<br>
+  ${p.image ? `<img src="${p.image}" alt="preuve" style="width: 150px; margin-top: 5px; cursor:pointer;" onclick="openModalImage('${p.image}')">` : ""}
+  ${p.link ? `<br><a href="#" onclick="openModalReport('${p.link.replace('/edit', '/preview')}')" style="color: #007BFF;">Voir le rapport</a>` : ""}
+`;
+
+const marker = L.marker(p.coords, iconToUse ? {icon: iconToUse} : undefined)
+  .bindPopup(popupContent);
+marker.addTo(layers[p.category]);
+});
+
+function openModalImage(src) {
+  const modal = document.getElementById("imgModal");
+  const modalImg = document.getElementById("modalImg");
+  modal.style.display = "flex";
+  modalImg.src = src;
+}
+
+
+// Écouteur sur la croix
+document.getElementById("closeModal").addEventListener("click", function () {
+  document.getElementById("imgModal").style.display = "none";
+});
+
+function openModalReport(link) {
+  const modal = document.getElementById("reportModal");
+  const frame = document.getElementById("reportFrame");
+  modal.style.display = "flex";
+  frame.src = link;
+}
+
+
+// Fermer le rapport avec la croix
+document.getElementById("closeReportModal").addEventListener("click", function () {
+  document.getElementById("reportModal").style.display = "none";
+  document.getElementById("reportFrame").src = "";  // reset le lien
+});
+
+// Fermer en cliquant à l’extérieur
+document.getElementById("reportModal").addEventListener("click", function (e) {
+  if (e.target.id === "reportModal") {
+    document.getElementById("reportModal").style.display = "none";
+    document.getElementById("reportFrame").src = "";
+  }
+});
+
+</script>
+
+
+</body>
+</html>
