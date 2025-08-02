@@ -72,23 +72,51 @@ iframe.modal-content {
 
 <body>
 
-<div id="menu">
-  <strong>Filtres :</strong><br>
+  <div id="menu" style="width:280px; overflow-y:auto; height:100vh; padding:10px; background:#B68A57; font-family:'Garamond', serif; font-size:14px;">
+<button onclick="disableAllFilters()" style="margin: 10px 0; width: 100%; padding: 5px; background-color: #6B5031; color: white; border: none; cursor: pointer;">
+  Désactiver tous les filtres
+</button>
+
+  <div>
+    <strong>Batiments</strong><br>
 <label><input type="checkbox" checked onchange="toggleCategory('Maisons')">Maisons</label><br>
 <label><input type="checkbox" checked onchange="toggleCategory('Camps')">Camps</label><br>
-<label><input type="checkbox" checked onchange="toggleCategory('Passeurs')">Passeurs</label><br>
-<label><input type="checkbox" checked onchange="toggleCategory('Tailleurs')">Tailleurs</label><br>
-<label><input type="checkbox" checked onchange="toggleCategory('Lieux de RDV Marshal')">Lieux de RDV Marshal</label><br>
-<label><input type="checkbox" checked onchange="toggleCategory('Diamant taillee')">Diamant taillee</label><br>
-<label><input type="checkbox" checked onchange="toggleCategory('Points chaud')">Points chauds</label><br>
-<label><input type="checkbox" checked onchange="toggleCategory('Possible QG')">Possible QG</label><br>
 <label><input type="checkbox" checked onchange="toggleCategory('Puits')">Puits</label><br>
-<label><input type="checkbox" checked onchange="toggleCategory('Documents')">Documents</label><br>
-<label><input type="checkbox" checked onchange="toggleCategory('Autres')">Autres</label><br>
-<label><input type="checkbox" checked onchange="toggleCategory('Blackstorm')">Blackstorm</label><br>
-</div>
+  </div>
 
+  <div style="margin-top:15px;">
+    <strong>Voie Maritime</strong><br>
+<label><input type="checkbox" checked onchange="toggleCategory('Passeurs')">Passeurs</label><br>
+  </div>
+
+  <div style="margin-top:15px;">
+    <strong>Lieux Illegaux</strong><br>
+<label><input type="checkbox" checked onchange="toggleCategory('Diamant taillee')">Diamant taillee</label><br>
+<label><input type="checkbox" checked onchange="toggleCategory('Possible QG')">Possible QG</label><br>
+<label><input type="checkbox" checked onchange="toggleCategory('Tailleurs')">Tailleurs</label><br>
+<label><input type="checkbox" checked onchange="toggleCategory('Points chaud')">Points chauds</label><br>
+  </div>
+
+  <div style="margin-top:15px;">
+    <strong>Gangs</strong><br>
+<label><input type="checkbox" checked onchange="toggleCategory('Blackstorm')">Blackstorm</label><br>
+<label><input type="checkbox" checked onchange="toggleCategory('La Horde')">La Horde</label><br>
+  </div>
+
+      <div style="margin-top:15px;">
+    <strong>Marshals</strong><br>
+<label><input type="checkbox" checked onchange="toggleCategory('RDV Marshal')">RDV Marshal</label><br>
+ </div>
+
+    <div style="margin-top:15px;">
+    <strong>Dossiers</strong><br>
+    <label><input type="checkbox" checked onchange="toggleCategory('Documents')">Documents</label><br>
+    <label><input type="checkbox" checked onchange="toggleCategory('Autres')">Autres</label><br>
+ </div>
+</div>
 <div id="map"></div>
+
+
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <div id="imgModal" class="modal">
@@ -115,7 +143,7 @@ const layers = {
   Camps: L.layerGroup().addTo(map),
   Passeurs: L.layerGroup().addTo(map),
   Tailleurs: L.layerGroup().addTo(map),
-  'Lieux de RDV Marshal': L.layerGroup().addTo(map),
+  'RDV Marshal': L.layerGroup().addTo(map),
   'Diamant taillee': L.layerGroup().addTo(map),
   'Points chaud': L.layerGroup().addTo(map),
   'Possible QG': L.layerGroup().addTo(map),
@@ -123,9 +151,10 @@ const layers = {
   Documents: L.layerGroup().addTo(map),
   Autres: L.layerGroup().addTo(map),
   Blackstorm: L.layerGroup().addTo(map),
+'La Horde': L.layerGroup().addTo(map),
 };
 
-  // Liste des points d’intérêt
+  // Maisons
 const points = [
   { name: "Maison #001", coords: [4613, 4847], description: "Maison de Tommy Tyks et de Riley Winchester", category: "Maisons", image: "IMAGE/preuve-tommy.png" },
   { name: "Maison #002", coords: [4857, 4823], description: "Maison de Maggie Garrison", category: "Maisons" },
@@ -133,11 +162,15 @@ const points = [
   { name: "Maison #004", coords: [4862, 7086], description: "Maison de Micah Colt", category: "Maisons" },
   { name: "Maison #005", coords: [4606, 4298], description: "Maison de Billie Pirate O'connel", category: "Maisons" },
   { name: "Maison #006", coords: [3719, 4234], description: "Maison de Ray buffalo (Sheriff de WE)", category: "Maisons" },
+
+  // Puits
   { name: "Puit de Roanoke", coords: [5803, 7639], description: "À côté d'une maison frappée par un éclat de météorite se trouve un vieux puits. Une échelle permet d’y descendre, menant à une vaste cave souterraine ou à un ancien bunker dissimulé sous terre.", category: "Puits", image: "IMAGE/puitmeteor.png" },
+  // Liste des points d’intérêt
   { name: "Tailleur de Lemoyne ", coords: [3719, 7018], description: "Un tailleur clandestin s’est installé dans une tente près de la rivière. Les visiteurs peuvent s’y changer discrètement.", category: "Tailleurs" },
   { name: "Tailleur de Big Valley ", coords: [4305, 3499], description: "Un tailleur clandestin s’est installé dans un petit camp. Les visiteurs peuvent s’y changer discrètement.", category: "Tailleurs" },
   { name: "Tailleur de Tall Trees ", coords: [2693, 4059], description: "Un tailleur clandestin s’est installé dans un camp. Les visiteurs peuvent s’y changer discrètement. Attention aux grizzlies", category: "Tailleurs" },
   { name: "Tailleur de Donner Falls ", coords: [5658, 6276], description: "Un tailleur clandestin s’est installé devant une vieille maison. Les visiteurs peuvent s’y changer discrètement. Attention aux grizzlies", category: "Tailleurs" },
+    // Tailleurss
   { name: "Distillerie", coords: [4771, 4820], description: "La distillerie est le théâtre de tueries de masse. Il est également possible d’entrer à l’intérieur du bâtiment pour en explorer les lieux.", category: "Diamant taillee" },
   { name: "Village brulée", coords: [4101, 5405], description: "Le village incendié est le théâtre de tueries de masse.", category: "Diamant taillee" },
   { name: "Tour Tesla", coords: [6027, 7680], description: "La tour Tesla est le théâtre de tueries de masse.", category: "Diamant taillee" },
@@ -150,6 +183,8 @@ const points = [
   { name: "Gang Blackstorm", coords: [2142, 2772], description: "Bruce Saint-Denis et joh vanille regulierement vu sur armadillo", category: "Blackstorm"},
   { name: "Ancien QG des Blackstorm", coords: [4830, 7708], description: "Ce lieu a très probablement été abandonné, le groupe ayant dû changer d’emplacement depuis.", category: "Blackstorm"},
   { name: "Observation", coords: [3169, 7676], description: "Observation sur le sherif Luca Brasi et le sherif O’Hara Jack", category: "Documents", link: "DOCUMENTS/ObservationSLemoyne.pdf" },
+  { name: "La Horde", coords: [4486, 5020], description: "la Horde ayant été vue quitter les lieux.", category: "La Horde" },
+    { name: "Distillerie clandestine", coords: [2838, 4207], description: "Lieux de repli Marshal", category: "RDV Marshal" },
 
 ];
 
@@ -205,21 +240,21 @@ const guarmaIcon = L.icon({
 
 const documentsIcon = L.icon({
   iconUrl: 'ICON/rapport-icon.png',
-  iconSize: [41, 39],
+  iconSize: [25, 40],
   iconAnchor: [16, 37],
   popupAnchor: [0, -37]
 });
 
 const BlackstormIcon = L.icon({
   iconUrl: 'ICON/bs-icon.png',
-  iconSize: [41, 39],
+  iconSize: [25, 40],
   iconAnchor: [16, 37],
   popupAnchor: [0, -37]
 });
 
 const RoseIcon = L.icon({
   iconUrl: 'ICON/rose-icon.png',
-  iconSize: [25, 41],
+  iconSize: [25, 40],
   iconAnchor: [16, 37],
   popupAnchor: [0, -37]
 });
@@ -230,6 +265,33 @@ const puitIcon = L.icon({
   iconAnchor: [16, 37],
   popupAnchor: [0, -37]
 });
+
+const hordeIcon = L.icon({
+  iconUrl: 'ICON/lahorde-icon.png',
+  iconSize: [25, 40],
+  iconAnchor: [16, 37],
+  popupAnchor: [0, -37]
+});
+
+const rdvIcon = L.icon({
+  iconUrl: 'ICON/rdv-icon.png',
+  iconSize: [25, 40],
+  iconAnchor: [16, 37],
+  popupAnchor: [0, -37]
+});
+
+// pour desac les filtres
+function disableAllFilters() {
+  const checkboxes = document.querySelectorAll('#menu input[type="checkbox"]');
+  checkboxes.forEach(checkbox => {
+    if (!checkbox.disabled) {
+      checkbox.checked = false;
+      const event = new Event('change');
+      checkbox.dispatchEvent(event); // pour déclencher le toggleCategory associé
+    }
+  });
+}
+
 
 // Ajout des marqueurs avec icônes adaptées
 points.forEach(p => {
@@ -253,6 +315,10 @@ points.forEach(p => {
     iconToUse = RoseIcon;
   }else if (p.category === 'Puits') {
     iconToUse = puitIcon;
+  }else if (p.category === 'La Horde') {
+    iconToUse = hordeIcon;
+  }else if (p.category === 'RDV Marshal') {
+    iconToUse = rdvIcon;
     }
   // Sinon, pas d'icône personnalisée (marqueur par défaut)
 
@@ -308,6 +374,8 @@ document.getElementById("reportModal").addEventListener("click", function (e) {
 
 </body>
 </html>
+
+
 
 
 
