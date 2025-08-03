@@ -134,7 +134,7 @@ iframe.modal-content {
   });
 
   const bounds = [[0, 0], [imageHeight, imageWidth]];
-  const image = L.imageOverlay('https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/7d43e5bc-9010-45cc-ac8b-ae413ba87dfe/dk9ul28-ca60a92a-3f31-4bed-be0e-2a3171ca09e8.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzdkNDNlNWJjLTkwMTAtNDVjYy1hYzhiLWFlNDEzYmE4N2RmZVwvZGs5dWwyOC1jYTYwYTkyYS0zZjMxLTRiZWQtYmUwZS0yYTMxNzFjYTA5ZTgucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.KXRqfVt5aToeNF-L3-_gCj2yKXbzUs2YMrI5F393oE4', bounds).addTo(map);
+  const image = L.imageOverlay('map.png', bounds).addTo(map);
   map.fitBounds(bounds);
 
   // Regroupe les points par catégorie
@@ -163,28 +163,49 @@ const points = [
   { name: "Maison #005", coords: [4606, 4298], description: "Maison de Billie Pirate O'connel", category: "Maisons" },
   { name: "Maison #006", coords: [3719, 4234], description: "Maison de Ray buffalo (Sheriff de WE)", category: "Maisons" },
 
+  // Camps
+  { name: "Camp #001", coords: [2897, 6971], description: "Petit camp a proximiter des rails", category: "Camps" },
+  { name: "Camp #002", coords: [4016, 6084], description: "Un petit campement  sur une colline. Un Micah se trouvait tout près, avec une pelle, un arrosoir et un exemplaire du New Hanover Post.", category: "Camps", image: "IMAGE/camp002micah.png" },
+
   // Puits
   { name: "Puit de Roanoke", coords: [5803, 7639], description: "À côté d'une maison frappée par un éclat de météorite se trouve un vieux puits. Une échelle permet d’y descendre, menant à une vaste cave souterraine ou à un ancien bunker dissimulé sous terre.", category: "Puits", image: "IMAGE/puitmeteor.png" },
-  // Liste des points d’intérêt
+ 
+  // Tailleurss
   { name: "Tailleur de Lemoyne ", coords: [3719, 7018], description: "Un tailleur clandestin s’est installé dans une tente près de la rivière. Les visiteurs peuvent s’y changer discrètement.", category: "Tailleurs" },
   { name: "Tailleur de Big Valley ", coords: [4305, 3499], description: "Un tailleur clandestin s’est installé dans un petit camp. Les visiteurs peuvent s’y changer discrètement.", category: "Tailleurs" },
   { name: "Tailleur de Tall Trees ", coords: [2693, 4059], description: "Un tailleur clandestin s’est installé dans un camp. Les visiteurs peuvent s’y changer discrètement. Attention aux grizzlies", category: "Tailleurs" },
   { name: "Tailleur de Donner Falls ", coords: [5658, 6276], description: "Un tailleur clandestin s’est installé devant une vieille maison. Les visiteurs peuvent s’y changer discrètement. Attention aux grizzlies", category: "Tailleurs" },
-    // Tailleurss
+
+  // Tuerie de masse
   { name: "Distillerie", coords: [4771, 4820], description: "La distillerie est le théâtre de tueries de masse. Il est également possible d’entrer à l’intérieur du bâtiment pour en explorer les lieux.", category: "Diamant taillee" },
   { name: "Village brulée", coords: [4101, 5405], description: "Le village incendié est le théâtre de tueries de masse.", category: "Diamant taillee" },
   { name: "Tour Tesla", coords: [6027, 7680], description: "La tour Tesla est le théâtre de tueries de masse.", category: "Diamant taillee" },
+ 
+  // QG
   { name: "Les italiens", coords: [3196, 6221], description: "Des soupçons planent quant à une possible occupation des lieux par Les Italiens", category: "Possible QG" },
   { name: "Groupe Inconnus", coords: [4187, 5572], description: "Le groupe présent sur les lieux s’est d’abord revendiqué comme appartenant au Front, puis aux Templiers, affirmant utiliser plusieurs noms. Ces deux factions étant bien connues, il est fort probable qu’ils aient menti sur leur véritable identité.", category: "Possible QG" },
+ 
+  // Passeurs
   { name: "Passeur Camp", coords: [3207, 6174], description: "Point d’exfiltration : passeur pour Guarma identifié sur le ponton à proximité immédiate du camp.", category: "Passeurs" },
   { name: "Passeur Bacchus", coords: [5568, 6040], description: "Point d’exfiltration : passeur pour Guarma identifié sur la plage en dessous du pont de Bacchus.", category: "Passeurs", image: "IMAGE/PasseurBacchus.png" },
+  
+  // Blackstorm
   { name: "Rapport du 25/07/1901", coords: [4278, 7884], description: "Prise d'otage et attaque armee lors du transfert du detenu Joh Vanille", category: "Blackstorm",  link: "DOCUMENTS/Rapport25071901.pdf" },
   { name: "Rapport du 02/08/1901", coords: [3902, 3561], description: "Bruce Saint-Denis a révélé qu’il possède, avec Joh Vanille, une grande maison située au bord du lac d’Owanjila, à l’ouest de West Elizabeth, où ils vivent en colocation.", category: "Blackstorm",  link: "DOCUMENTS/Rapport02081901.pdf" },
   { name: "Gang Blackstorm", coords: [2142, 2772], description: "Bruce Saint-Denis et joh vanille regulierement vu sur armadillo", category: "Blackstorm"},
   { name: "Ancien QG des Blackstorm", coords: [4830, 7708], description: "Ce lieu a très probablement été abandonné, le groupe ayant dû changer d’emplacement depuis.", category: "Blackstorm"},
+  { name: "Rapport du 02/08/1901", coords: [4178, 5793], description: "Prise d’otage près de Flatneck par les BlackStorm. Négociations réussies, otages libérés contre rançon. Escortés en sécurité à Saint Denis. Aucune poursuite engagée.", category: "Blackstorm", link: "DOCUMENTS/Rapport0208.pdf"  },
+  { name: "Rapport du 31/07/1901", coords: [4380, 6543], description: "Le 31/07/1901, Circée Miller, U.S. Marshal, intervient face au groupe BlackStorm dans Valentine et ses environs. Après plusieurs confrontations et prises d’otages, dont elle-même et d’autres sheriffs, des négociations ont lieu. Miller est blessée mais libérée, tandis que les BlackStorm fuient sans nouvelles ultérieures.", category: "Blackstorm", link: "DOCUMENTS/Rapport3107.pdf"  },
+
+  
+  // Documents
   { name: "Observation", coords: [3169, 7676], description: "Observation sur le sherif Luca Brasi et le sherif O’Hara Jack", category: "Documents", link: "DOCUMENTS/ObservationSLemoyne.pdf" },
+ 
+  // La horde
   { name: "La Horde", coords: [4486, 5020], description: "la Horde ayant été vue quitter les lieux.", category: "La Horde" },
-    { name: "Distillerie clandestine", coords: [2838, 4207], description: "Lieux de repli Marshal", category: "RDV Marshal" },
+ 
+  // QG Marshal
+  { name: "Distillerie clandestine", coords: [2838, 4207], description: "Lieux de repli Marshal", category: "RDV Marshal" },
 
 ];
 
@@ -196,11 +217,11 @@ const points = [
       map.addLayer(layers[cat]);
     }
   }
-// map.on('click', function(e) {
-// const y = Math.floor(e.latlng.lat);
-// const x = Math.floor(e.latlng.lng);
-// alert(`Coordonnées pixels : Y = ${y}, X = ${x}`);
-// });
+  map.on('click', function(e) {
+  const y = Math.floor(e.latlng.lat);
+  const x = Math.floor(e.latlng.lng);
+  alert(`Coordonnées pixels : Y = ${y}, X = ${x}`);
+});
 
 // Icônes personnalisées
 const houseIcon = L.icon({
@@ -374,7 +395,6 @@ document.getElementById("reportModal").addEventListener("click", function (e) {
 
 </body>
 </html>
-
 
 
 
